@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as np
 
 from utils import pole_zero_directions, BoundST, tf, mimotf
@@ -10,7 +11,7 @@ p = 3
 z = 2
 d = 30. / 180. * np.pi
 g1 = mimotf([[1 / (s - p), 0],
-             [0, 1/ (s + 3)]])
+             [0, 1 / (s + 3)]])
 g2 = mimotf([[np.cos(d), -np.sin(d)],
              [np.sin(d), np.cos(d)]])
 g3 = mimotf([[(s - z) / (0.1 * s + 1), 0],
@@ -19,9 +20,21 @@ G = g1 * g2 * g3
 
 p = G.poles()
 z = G.zeros()
-print 'Poles: {0}'.format(p)
-print 'Zeros: {0}'.format(z)
-print ''
+print('All Poles: {0}'.format(p))
+print('All Zeros: {0}\n'.format(z))
+
+def RHPonly(x):
+    RHPx = []
+    for i in range(len(x)):
+        if x[i].real > 0:
+            RHPx.append(np.round(x[i].real,2))
+    return list(set(RHPx))
+
+RHPzeros = RHPonly(z)
+RHPpoles = RHPonly(p)
+print("RHP poles only: ", RHPpoles)
+print("RHP zeros only: ", RHPzeros)
+
 
 # selected p & z
 p = [3.]
@@ -34,10 +47,11 @@ display_export_data(pdata, 'Poles', rowhead)
 display_export_data(zdata, 'Zeros', rowhead)
 
 zdata,_ = pole_zero_directions(G, z, 'z', 'y')
-print 'M_S,min = M_T,min = {:.2f}'.format(BoundST(G, p, z))
+print('M_S,min = M_T,min = {:.2f}'.format(BoundST(G, p, z)))
 
 # TODO fix BoundST with deadtime
-#print '\nPeak example for deadtime:'
+print('\nPeak example for deadtime:')
 deadtime = np.matrix([[-1, 0],
                       [-2., -3]])
-#print 'M_T,min = {:.2f}'.format(BoundST(G, p, z, deadtime))
+     
+print('M_T,min = {:.2f}'.format(BoundST(G, p, z, deadtime)))
